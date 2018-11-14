@@ -1,0 +1,20 @@
+parameters:
+  env(SEQGEN_HOST_AND_PORT): '127.0.0.1:65279'
+
+services:
+  Exn\SeqgenBundle\IdentifierGeneratorInterface:
+    alias: Exn\SeqgenBundle\SeqgenClient
+
+  Exn\SeqgenBundle\SeqgenClient:
+    arguments:
+      $hostAndPort: '%env(SEQGEN_HOST_AND_PORT)%'
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Exn\SeqgenBundle\Doctrine\IdentifiableUpdater:
+    autowire: true
+    autoconfigure: true
+    public: false
+    tags:
+      - { name: doctrine.event_listener, event: prePersist }

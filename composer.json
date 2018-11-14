@@ -1,0 +1,24 @@
+{
+  "name": "exter-n/seqgen-bundle",
+  "type": "library",
+  "description": "Identifier generation for Doctrine entities using seqgend",
+  "keywords": [],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Exter-N",
+      "email": "exter-n@exter-n.fr"
+    }
+  ],
+  "require": {
+    "php": "^7.1.3",
+    "symfony/serializer": "~2.7|~3.0|~4.0",
+    "symfony/dependency-injection": "~3.2|~4.0",
+    "doctrine/orm": "~2.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "Exn\\SeqgenBundle\\": "src/"
+    }
+  }
+}
