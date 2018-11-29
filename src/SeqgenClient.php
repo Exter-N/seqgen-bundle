@@ -59,15 +59,24 @@ class SeqgenClient implements IdentifierGeneratorInterface
             return;
         }
 
-        while ($requests-- > 0) {
-            \fwrite($this->socket, \chr(self::IDS_PER_REQUEST));
-            $raw = \fread($this->socket, self::IDS_PER_REQUEST * 8);
-            if (empty($raw)) {
-                throw new \RuntimeException('No identifiers returned, is the seqgen server active?');
+        if (null !== $this->stopwatch) {
+            $this->stopwatch->start('seqgen');
+        }
+        try {
+            while ($requests-- > 0) {
+                \fwrite($this->socket, \chr(self::IDS_PER_REQUEST));
+                $raw = \fread($this->socket, self::IDS_PER_REQUEST * 8);
+                if (empty($raw)) {
+                    throw new \RuntimeException('No identifiers returned, is the seqgen server active?');
+                }
+                for ($num = self::IDS_PER_REQUEST, $pos = 0; $num-- > 0; $pos += 8) {
+                    $unpacked = \unpack('N2', \substr($raw, $pos, 8));
+                    $this->queue[] = ($unpacked[1] << 32) | $unpacked[2];
+                }
             }
-            for ($num = self::IDS_PER_REQUEST, $pos = 0; $num-- > 0; $pos += 8) {
-                $unpacked = \unpack('N2', \substr($raw, $pos, 8));
-                $this->queue[] = ($unpacked[1] << 32) | $unpacked[2];
+        } finally {
+            if (null !== $this->stopwatch) {
+                $this->stopwatch->stop('seqgen');
             }
         }
     }
